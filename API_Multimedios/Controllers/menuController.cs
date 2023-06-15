@@ -31,10 +31,36 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpPut("agregarMenu")]
-        public void AgregarMenu(menu nuevoMenu)
+        public IActionResult AgregarMenu(menu nuevoMenu)
         {
-            this.contexto.Add(nuevoMenu);
-            this.contexto.SaveChanges();
+            try
+            {
+                this.contexto.Add(nuevoMenu);
+                this.contexto.SaveChanges();
+                return Ok("Menu agregado exitosamente.");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+            
+        }
+
+        [HttpPut("modificar")]
+        public IActionResult ModificarMenu(menu menu)
+        {
+            try
+            {
+                menu.UpdatedAt = DateTime.Now;
+                this.contexto.Update(menu);
+                this.contexto.SaveChanges();
+
+                return Ok("Menu modificado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error detectado  " + ex);
+            }
         }
 
         [HttpDelete("{idMenu}")]

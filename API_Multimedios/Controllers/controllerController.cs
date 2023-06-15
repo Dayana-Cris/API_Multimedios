@@ -31,10 +31,34 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpPut("agregarController")]
-        public void AgregarController(controller nuevoController)
+        public IActionResult AgregarController(controller nuevoController)
         {
-            this.contexto.Add(nuevoController);
-            this.contexto.SaveChanges();
+            try
+            {
+                this.contexto.Add(nuevoController);
+                this.contexto.SaveChanges();
+                return Ok("Controller agregado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+        }
+
+        [HttpPut("modificar")]
+        public IActionResult ModificarController(controller controller)
+        {
+            try
+            {
+                this.contexto.Update(controller);
+                this.contexto.SaveChanges();
+
+                return Ok("Controller modificado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error detectado  " + ex);
+            }
         }
 
         [HttpDelete("{idController}")]

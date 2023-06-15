@@ -31,10 +31,45 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpPut("agregarUser")]
-        public void AgregarUser(menu nuevoUser)
+        public IActionResult AgregarUser(user nuevoUser)
         {
-            this.contexto.Add(nuevoUser);
-            this.contexto.SaveChanges();
+            try
+            {
+                if (!contexto.roles.Any(r => r.IdRol == nuevoUser.IdRol))
+                {
+                    return BadRequest("El id del rol especificado no existe en la base de datos.");
+                }
+                this.contexto.Add(nuevoUser);
+                this.contexto.SaveChanges();
+
+                return Ok("User agregado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+          
+        }
+
+        [HttpPut("modificar")]
+        public IActionResult ModificarUser(user user)
+        {
+            try
+            {
+                if (!contexto.roles.Any(r => r.IdRol == user.IdRol))
+                {
+                    return BadRequest("El id del rol especificado no existe en la base de datos.");
+                }
+                this.contexto.Update(user);
+                this.contexto.SaveChanges();
+                user.UpdateAt = DateTime.Now;
+
+                return Ok("User modificado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error detectado  " + ex);
+            }
         }
 
         [HttpDelete("{idUser}")]

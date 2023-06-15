@@ -6,27 +6,20 @@ namespace API_Multimedios.Models
     public class error
     {
         [Key]
+        [Required(ErrorMessage = "Espacio obligatorio. No dejarlo en blanco")]
         public int IdErrores { get; set; }
 
+        [Required(ErrorMessage = "Espacio obligatorio. No dejarlo en blanco")]
         public string Sentencia { get; set; }
 
+        [Required(ErrorMessage = "Espacio obligatorio. No dejarlo en blanco")]
         public string Controller { get; set; }
 
+        [Required(ErrorMessage = "Espacio obligatorio. No dejarlo en blanco")]
         public DateTime CreatedAt { get; set; }
 
-        public int idUser { get; set; }
-
-        public bool ExisteUser(int idUser, List<user> listaUsuarios)
-        {
-
-            foreach (user user in listaUsuarios)
-            {
-                if (user.IdUser == idUser)
-                {
-                    return true; 
-                }
-            }
-            return false;
-        }
+        [Required(ErrorMessage = "Espacio obligatorio. No dejarlo en blanco")]
+        [ForeignKey("user")]
+        public int IdUser { get; set; }
     }
 }
