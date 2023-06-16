@@ -35,6 +35,8 @@ namespace API_Multimedios.Controllers
         {
             try
             {
+                nuevoMenu.CreatedAt = DateTime.Now;
+                nuevoMenu.UpdatedAt = DateTime.Now;
                 this.contexto.Add(nuevoMenu);
                 this.contexto.SaveChanges();
                 return Ok("Menu agregado exitosamente.");

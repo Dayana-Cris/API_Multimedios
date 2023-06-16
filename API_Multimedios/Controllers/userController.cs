@@ -39,6 +39,8 @@ namespace API_Multimedios.Controllers
                 {
                     return BadRequest("El id del rol especificado no existe en la base de datos.");
                 }
+                nuevoUser.CreatedAt = DateTime.Now;
+                nuevoUser.UpdateAt = DateTime.Now;
                 this.contexto.Add(nuevoUser);
                 this.contexto.SaveChanges();
 

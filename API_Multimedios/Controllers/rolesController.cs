@@ -40,6 +40,8 @@ namespace API_Multimedios.Controllers
                 {
                     return BadRequest("El id del menu especificado no existe en la base de datos.");
                 }
+                nuevoRol.CreatedAt = DateTime.Now;  
+                nuevoRol.UpdatedAt = DateTime.Now;
                 this.contexto.Add(nuevoRol);
                 this.contexto.SaveChanges();
 

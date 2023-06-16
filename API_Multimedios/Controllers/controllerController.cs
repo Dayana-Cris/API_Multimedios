@@ -37,6 +37,8 @@ namespace API_Multimedios.Controllers
             {
                 this.contexto.Add(nuevoController);
                 this.contexto.SaveChanges();
+                nuevoController.CreatedAt = DateTime.Now;
+                nuevoController.UpdatedAt = DateTime.Now;
                 return Ok("Controller agregado exitosamente.");
             }
             catch (Exception ex)
