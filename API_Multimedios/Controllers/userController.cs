@@ -78,13 +78,21 @@ namespace API_Multimedios.Controllers
             string mensaje = "No se logró eliminar el registro del usuario";
             var temp = this.contexto.user.Find(idUser);
 
-            if (temp != null)
+            try
             {
-                this.contexto.Remove(temp);
-                this.contexto.SaveChanges();
+                if (temp != null)
+                {
+                    this.contexto.Remove(temp);
+                    this.contexto.SaveChanges();
 
-                mensaje = "El user con id: " + temp.IdUser + " se eliminó correctamente!";
+                    mensaje = "El user con id " + temp.IdUser + " se eliminó correctamente!";
+                }
             }
+            catch (Exception ex)
+            {
+                return mensaje+"  "+ex;
+            }
+           
             return mensaje;
         }
     }

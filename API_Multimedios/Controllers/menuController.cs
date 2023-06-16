@@ -68,13 +68,19 @@ namespace API_Multimedios.Controllers
         {
             string mensaje = "No se logró eliminar el registro del menu";
             var temp = this.contexto.menu.Find(idMenu);
-
-            if (temp != null)
+            try
             {
-                this.contexto.Remove(temp);
-                this.contexto.SaveChanges();
+                if (temp != null)
+                {
+                    this.contexto.Remove(temp);
+                    this.contexto.SaveChanges();
 
-                mensaje = "El menu con id: " + temp.IdMenu + " se eliminó correctamente!";
+                    mensaje = "El menu con id " + temp.IdMenu + " se eliminó correctamente!";
+                }
+            }
+            catch(Exception ex)
+            {
+                return mensaje + "  " + ex;
             }
             return mensaje;
         }

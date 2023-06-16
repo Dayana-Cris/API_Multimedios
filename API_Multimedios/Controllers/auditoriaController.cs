@@ -86,13 +86,21 @@ namespace API_Multimedios.Controllers
             string mensaje = "No se logró eliminar el registro de la auditoria";
             var temp = this.contexto.auditoria.Find(idAuditoria);
 
-            if (temp != null)
+            try
             {
-                this.contexto.Remove(temp);
-                this.contexto.SaveChanges();
+                if (temp != null)
+                {
+                    this.contexto.Remove(temp);
+                    this.contexto.SaveChanges();
 
-                mensaje = "La auditoria con id: " + temp.IdAuditoria + " se eliminó correctamente!";
+                    mensaje = "La auditoria con id " + temp.IdAuditoria + " se eliminó correctamente!";
+                }
             }
+            catch (Exception ex)
+            {
+                return mensaje +"  "+ex;
+            }
+          
             return mensaje;
         }
     }

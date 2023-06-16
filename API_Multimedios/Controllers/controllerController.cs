@@ -67,13 +67,21 @@ namespace API_Multimedios.Controllers
             string mensaje = "No se logró eliminar el registro del controller";
             var temp = this.contexto.controller.Find(idController);
 
-            if (temp != null)
+            try
             {
-                this.contexto.Remove(temp);
-                this.contexto.SaveChanges();
+                if (temp != null)
+                {
+                    this.contexto.Remove(temp);
+                    this.contexto.SaveChanges();
 
-                mensaje = "El controller con id: " + temp.IdController + " se eliminó correctamente!";
+                    mensaje = "El controller con id " + temp.IdController + " se eliminó correctamente!";
+                }
             }
+            catch (Exception ex)
+            {
+                return mensaje+"  "+ex;
+            }
+            
             return mensaje;
         }
     }

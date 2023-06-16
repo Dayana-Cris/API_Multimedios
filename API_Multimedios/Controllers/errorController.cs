@@ -35,7 +35,7 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.user.Any(u => u.IdUser == nuevoError.idUser))
+                if (!contexto.user.Any(u => u.IdUser == nuevoError.IdUser))
                 {
                     return BadRequest("El id del user especificado no existe en la base de datos.");
                 }
@@ -56,7 +56,7 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.user.Any(u => u.IdUser == error.idUser))
+                if (!contexto.user.Any(u => u.IdUser == error.IdUser))
                 {
                     return BadRequest("El id del user especificado no existe en la base de datos.");
                 }
@@ -77,13 +77,21 @@ namespace API_Multimedios.Controllers
             string mensaje = "No se logró eliminar el registro del error";
             var temp = this.contexto.error.Find(idError);
 
-            if (temp != null)
+            try
             {
-                this.contexto.Remove(temp);
-                this.contexto.SaveChanges();
+                if (temp != null)
+                {
+                    this.contexto.Remove(temp);
+                    this.contexto.SaveChanges();
 
-                mensaje = "El error con id: " + temp.IdErrores + " se eliminó correctamente!";
+                    mensaje = "El error con id " + temp.IdErrores + " se eliminó correctamente!";
+                }
             }
+            catch (Exception ex)
+            {
+                return mensaje +"  "+ex;
+            }
+           
             return mensaje;
         }
     }
