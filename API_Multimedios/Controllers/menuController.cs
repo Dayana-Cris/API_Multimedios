@@ -55,6 +55,7 @@ namespace API_Multimedios.Controllers
             {
                 menu.UpdatedAt = DateTime.Now;
                 this.contexto.Update(menu);
+                this.contexto.Entry(menu).Property("CreatedAt").IsModified = false;
                 this.contexto.SaveChanges();
 
                 return Ok("Menu modificado exitosamente.");

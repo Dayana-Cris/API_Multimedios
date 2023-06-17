@@ -70,6 +70,7 @@ namespace API_Multimedios.Controllers
                     return BadRequest("El id del menu especificado no existe en la base de datos.");
                 }
                 this.contexto.Update(auditoria);
+                this.contexto.Entry(auditoria).Property("CreateDate").IsModified = false;
                 this.contexto.SaveChanges();
 
                 return Ok("Auditoria modificada exitosamente.");

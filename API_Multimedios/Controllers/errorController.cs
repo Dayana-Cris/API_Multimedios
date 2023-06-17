@@ -61,6 +61,7 @@ namespace API_Multimedios.Controllers
                     return BadRequest("El id del user especificado no existe en la base de datos.");
                 }
                 this.contexto.Update(error);
+                this.contexto.Entry(error).Property("CreatedAt").IsModified = false;
                 this.contexto.SaveChanges();
 
                 return Ok("Error modificado exitosamente.");

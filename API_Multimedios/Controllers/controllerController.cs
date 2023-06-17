@@ -53,6 +53,7 @@ namespace API_Multimedios.Controllers
             try
             {
                 this.contexto.Update(controller);
+                this.contexto.Entry(controller).Property("CreatedAt").IsModified = false;
                 this.contexto.SaveChanges();
 
                 return Ok("Controller modificado exitosamente.");

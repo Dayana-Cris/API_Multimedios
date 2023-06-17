@@ -65,6 +65,7 @@ namespace API_Multimedios.Controllers
                 }
                 rol.UpdatedAt = DateTime.Now;
                 this.contexto.Update(rol);
+                this.contexto.Entry(rol).Property("CreatedAt").IsModified = false;
                 this.contexto.SaveChanges();
 
                 return Ok("Rol modificado exitosamente.");
