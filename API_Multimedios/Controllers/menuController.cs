@@ -23,11 +23,21 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpGet("{idMenu}")]
-        public menu GetDatos(int idMenu)
+        public IActionResult GetDatos(int idMenu)
         {
-            var temp = this.contexto.menu.Find(idMenu);
-
-            return temp;
+            try
+            {
+                var temp = this.contexto.menu.Find(idMenu);
+                if (temp != null)
+                {
+                    return Ok(temp);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+            return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
         [HttpPut("agregarMenu")]
@@ -35,6 +45,12 @@ namespace API_Multimedios.Controllers
         {
             try
             {
+                var temp = this.contexto.menu.Find(nuevoMenu.IdMenu);
+
+                if (temp != null)
+                {
+                    return BadRequest("El id del menu ya existe dentro de la base de datos");
+                }
                 nuevoMenu.CreatedAt = DateTime.Now;
                 nuevoMenu.UpdatedAt = DateTime.Now;
                 this.contexto.Add(nuevoMenu);
@@ -53,12 +69,22 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                menu.UpdatedAt = DateTime.Now;
-                this.contexto.Update(menu);
-                this.contexto.Entry(menu).Property("CreatedAt").IsModified = false;
-                this.contexto.SaveChanges();
+                var temp = this.contexto.menu.Find(menu.IdMenu);
 
-                return Ok("Menu modificado exitosamente.");
+                if (temp == null)
+                {
+                    return BadRequest("El id del menu no existe dentro de la base de datos, por favor ingrese un id que exista");
+                }
+                else
+                {
+                    menu.UpdatedAt = DateTime.Now;
+                    this.contexto.Attach(temp);
+                    this.contexto.Entry(temp).CurrentValues.SetValues(menu);
+                    this.contexto.Entry(temp).Property("CreatedAt").IsModified = false;
+                    this.contexto.SaveChanges();
+
+                    return Ok("Menu modificado exitosamente.");
+                }  
             }
             catch (Exception ex)
             {

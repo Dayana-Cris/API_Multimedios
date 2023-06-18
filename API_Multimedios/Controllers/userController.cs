@@ -23,11 +23,21 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpGet("{idUser}")]
-        public user GetDatos(int idUser)
+        public IActionResult GetDatos(int idUser)
         {
-            var temp = this.contexto.user.Find(idUser);
-
-            return temp;
+            try
+            {
+                var temp = this.contexto.user.Find(idUser);
+                if (temp != null)
+                {
+                    return Ok(temp);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+            return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
         [HttpPut("agregarUser")]
@@ -35,16 +45,25 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.roles.Any(r => r.IdRol == nuevoUser.IdRol))
-                {
-                    return BadRequest("El id del rol especificado no existe en la base de datos.");
-                }
-                nuevoUser.CreatedAt = DateTime.Now;
-                nuevoUser.UpdateAt = DateTime.Now;
-                this.contexto.Add(nuevoUser);
-                this.contexto.SaveChanges();
+                var temp = this.contexto.user.Find(nuevoUser.IdUser);
 
-                return Ok("User agregado exitosamente.");
+                if (temp != null)
+                {
+                    return BadRequest("El id del user ya existe dentro de la base de datos");
+                }
+                else
+                {
+                    if (!contexto.roles.Any(r => r.IdRol == nuevoUser.IdRol))
+                    {
+                        return BadRequest("El id del rol especificado no existe en la base de datos.");
+                    }
+                    nuevoUser.CreatedAt = DateTime.Now;
+                    nuevoUser.UpdateAt = DateTime.Now;
+                    this.contexto.Add(nuevoUser);
+                    this.contexto.SaveChanges();
+
+                    return Ok("User agregado exitosamente.");
+                }
             }
             catch (Exception ex)
             {
@@ -58,13 +77,20 @@ namespace API_Multimedios.Controllers
         {
             try
             {
+                var temp = this.contexto.user.Find(user.IdUser);
+
+                if (temp == null)
+                {
+                    return BadRequest("El id del user no existe dentro de la base de datos, por favor ingrese un id que exista");
+                }
                 if (!contexto.roles.Any(r => r.IdRol == user.IdRol))
                 {
                     return BadRequest("El id del rol especificado no existe en la base de datos.");
                 }
                 user.UpdateAt = DateTime.Now;
-                this.contexto.Update(user);
-                this.contexto.Entry(user).Property("CreatedAt").IsModified = false;
+                this.contexto.Attach(temp);
+                this.contexto.Entry(temp).CurrentValues.SetValues(user);
+                this.contexto.Entry(temp).Property("CreatedAt").IsModified = false;
                 this.contexto.SaveChanges();
                
 

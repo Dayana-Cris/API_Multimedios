@@ -23,11 +23,21 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpGet("{idAuditoria}")]
-        public auditoria GetDatos(int idAuditoria)
+        public IActionResult GetDatos(int idAuditoria)
         {
-            var temp = this.contexto.auditoria.Find(idAuditoria);
-
-            return temp;
+            try
+            {
+                var temp = this.contexto.auditoria.Find(idAuditoria);
+                if (temp != null)
+                {
+                    return Ok(temp);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+            return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
         [HttpPut("agregarAuditoria")]
@@ -35,25 +45,34 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.user.Any(u => u.IdUser == nuevaAuditoria.IdUser))
-                {
-                    return BadRequest("El id del user especificado no existe en la base de datos.");
-                }
-                if (!contexto.menu.Any(m => m.IdMenu == nuevaAuditoria.IdMenu))
-                {
-                    return BadRequest("El id del menu especificado no existe en la base de datos.");
-                }
-                nuevaAuditoria.CreateDate = DateTime.Now;
-                this.contexto.Add(nuevaAuditoria);
-                this.contexto.SaveChanges();
+                var temp = this.contexto.auditoria.Find(nuevaAuditoria.IdAuditoria);
 
-                return Ok("Auditoria agregada exitosamente.");
+                if (temp != null)
+                {
+                    return BadRequest("El id de la auditoría ya existe dentro de la base de datos");
+                }
+                else
+                {
+                    if (!contexto.user.Any(u => u.IdUser == nuevaAuditoria.IdUser))
+                    {
+                        return BadRequest("El id del user especificado no existe en la base de datos.");
+                    }
+                    if (!contexto.menu.Any(m => m.IdMenu == nuevaAuditoria.IdMenu))
+                    {
+                        return BadRequest("El id del menu especificado no existe en la base de datos.");
+                    }
+                    nuevaAuditoria.CreateDate = DateTime.Now;
+                    this.contexto.Add(nuevaAuditoria);
+                    this.contexto.SaveChanges();
+
+                    return Ok("Auditoria agregada exitosamente.");
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest("Error de capa 8 :)  " + ex);
             }
-            
+
         }
 
         [HttpPut("modificar")]
@@ -61,19 +80,30 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.user.Any(u => u.IdUser == auditoria.IdUser))
-                {
-                    return BadRequest("El id del user especificado no existe en la base de datos.");
-                }
-                if (!contexto.menu.Any(m => m.IdMenu == auditoria.IdMenu))
-                {
-                    return BadRequest("El id del menu especificado no existe en la base de datos.");
-                }
-                this.contexto.Update(auditoria);
-                this.contexto.Entry(auditoria).Property("CreateDate").IsModified = false;
-                this.contexto.SaveChanges();
+                var temp = this.contexto.auditoria.Find(auditoria.IdAuditoria);
 
-                return Ok("Auditoria modificada exitosamente.");
+                if (temp == null)
+                {
+                    return BadRequest("El id de la auditoría no existe dentro de la base de datos, por favor ingrese un id que exista");
+                }
+                else
+                {
+                    if (!contexto.user.Any(u => u.IdUser == auditoria.IdUser))
+                    {
+                        return BadRequest("El id del user especificado no existe en la base de datos.");
+                    }
+                    if (!contexto.menu.Any(m => m.IdMenu == auditoria.IdMenu))
+                    {
+                        return BadRequest("El id del menu especificado no existe en la base de datos.");
+                    }
+                    
+                    this.contexto.Attach(temp);                   
+                    this.contexto.Entry(temp).CurrentValues.SetValues(auditoria);
+                    this.contexto.Entry(temp).Property("CreateDate").IsModified = false;
+                    this.contexto.SaveChanges();
+
+                    return Ok("Auditoria modificada exitosamente.");
+                }
             }
             catch (Exception ex)
             {

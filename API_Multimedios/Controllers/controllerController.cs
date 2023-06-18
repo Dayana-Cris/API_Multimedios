@@ -23,23 +23,44 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpGet("{idController}")]
-        public controller GetDatos(int idController)
+        public IActionResult GetDatos(int idController)
         {
-            var temp = this.contexto.controller.Find(idController);
-
-            return temp;
+            try
+            {
+                var temp = this.contexto.controller.Find(idController);
+                if (temp != null)
+                {
+                    return Ok(temp);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+            return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
         [HttpPut("agregarController")]
         public IActionResult AgregarController(controller nuevoController)
         {
+            
             try
             {
-                this.contexto.Add(nuevoController);
-                this.contexto.SaveChanges();
-                nuevoController.CreatedAt = DateTime.Now;
-                nuevoController.UpdatedAt = DateTime.Now;
-                return Ok("Controller agregado exitosamente.");
+                var temp = this.contexto.controller.Find(nuevoController.IdController);
+
+                if (temp != null)
+                {
+                    return BadRequest("El id del controller ya existe dentro de la base de datos");
+                }
+                else
+                {
+                    nuevoController.CreatedAt = DateTime.Now;
+                    nuevoController.UpdatedAt = DateTime.Now;
+                    this.contexto.Add(nuevoController);
+                    this.contexto.SaveChanges();
+                   
+                    return Ok("Controller agregado exitosamente.");
+                }
             }
             catch (Exception ex)
             {
@@ -52,11 +73,22 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                this.contexto.Update(controller);
-                this.contexto.Entry(controller).Property("CreatedAt").IsModified = false;
-                this.contexto.SaveChanges();
+                var temp = this.contexto.controller.Find(controller.IdController);
 
-                return Ok("Controller modificado exitosamente.");
+                if (temp == null)
+                {
+                    return BadRequest("El id del controller no existe dentro de la base de datos, por favor ingrese un id que exista");
+                }
+                else
+                {
+                    controller.UpdatedAt = DateTime.Now;
+                    this.contexto.Attach(temp);
+                    this.contexto.Entry(temp).CurrentValues.SetValues(controller);
+                    this.contexto.Entry(temp).Property("CreatedAt").IsModified = false;
+                    this.contexto.SaveChanges();
+
+                    return Ok("Controller modificado exitosamente.");
+                }
             }
             catch (Exception ex)
             {

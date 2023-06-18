@@ -23,11 +23,21 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpGet("{idRol}")]
-        public roles GetDatos(int idRol)
+        public IActionResult GetDatos(int idRol)
         {
-            var temp = this.contexto.roles.Find(idRol);
-
-            return temp;
+            try
+            {
+                var temp = this.contexto.roles.Find(idRol);
+                if (temp != null)
+                {
+                    return Ok(temp);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+            return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
 
@@ -36,16 +46,25 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.menu.Any(m => m.IdMenu == nuevoRol.IdMenu))
-                {
-                    return BadRequest("El id del menu especificado no existe en la base de datos.");
-                }
-                nuevoRol.CreatedAt = DateTime.Now;  
-                nuevoRol.UpdatedAt = DateTime.Now;
-                this.contexto.Add(nuevoRol);
-                this.contexto.SaveChanges();
+                var temp = this.contexto.roles.Find(nuevoRol.IdRol);
 
-                return Ok("Rol agregado exitosamente.");
+                if (temp != null)
+                {
+                    return BadRequest("El id del rol ya existe dentro de la base de datos");
+                }
+                else
+                {
+                    if (!contexto.menu.Any(m => m.IdMenu == nuevoRol.IdMenu))
+                    {
+                        return BadRequest("El id del menu especificado no existe en la base de datos.");
+                    }
+                    nuevoRol.CreatedAt = DateTime.Now;
+                    nuevoRol.UpdatedAt = DateTime.Now;
+                    this.contexto.Add(nuevoRol);
+                    this.contexto.SaveChanges();
+
+                    return Ok("Rol agregado exitosamente.");
+                }
             }
             catch (Exception ex)
             {
@@ -59,16 +78,26 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.menu.Any(m => m.IdMenu == rol.IdMenu))
-                {
-                    return BadRequest("El id del menu especificado no existe en la base de datos.");
-                }
-                rol.UpdatedAt = DateTime.Now;
-                this.contexto.Update(rol);
-                this.contexto.Entry(rol).Property("CreatedAt").IsModified = false;
-                this.contexto.SaveChanges();
+                var temp = this.contexto.roles.Find(rol.IdRol);
 
-                return Ok("Rol modificado exitosamente.");
+                if (temp == null)
+                {
+                    return BadRequest("El id del rol no existe dentro de la base de datos, por favor ingrese un id que exista");
+                }
+                else
+                {
+                    if (!contexto.menu.Any(m => m.IdMenu == rol.IdMenu))
+                    {
+                        return BadRequest("El id del menu especificado no existe en la base de datos.");
+                    }
+                    rol.UpdatedAt = DateTime.Now;
+                    this.contexto.Attach(temp);
+                    this.contexto.Entry(temp).CurrentValues.SetValues(rol);
+                    this.contexto.Entry(temp).Property("CreatedAt").IsModified = false;
+                    this.contexto.SaveChanges();
+
+                    return Ok("Rol modificado exitosamente.");
+                }
             }
             catch (Exception ex)
             {

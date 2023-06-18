@@ -23,11 +23,21 @@ namespace API_Multimedios.Controllers
         }
 
         [HttpGet("{idError}")]
-        public error GetDatos(int idError)
+        public IActionResult GetDatos(int idError)
         {
-            var temp = this.contexto.error.Find(idError);
-
-            return temp;
+            try
+            {
+                var temp = this.contexto.error.Find(idError);
+                if (temp != null)
+                {
+                    return Ok(temp);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error de capa 8 :)  " + ex);
+            }
+            return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
         [HttpPut("agregarError")]
@@ -35,15 +45,24 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.user.Any(u => u.IdUser == nuevoError.IdUser))
-                {
-                    return BadRequest("El id del user especificado no existe en la base de datos.");
-                }
-                nuevoError.CreatedAt = DateTime.Now;
-                this.contexto.Add(nuevoError);
-                this.contexto.SaveChanges();
+                var temp = this.contexto.error.Find(nuevoError.IdErrores);
 
-                return Ok("Error agregado exitosamente.");
+                if (temp != null)
+                {
+                    return BadRequest("El id del error ya existe dentro de la base de datos");
+                }
+                else
+                {
+                    if (!contexto.user.Any(u => u.IdUser == nuevoError.IdUser))
+                    {
+                        return BadRequest("El id del user especificado no existe en la base de datos.");
+                    }
+                    nuevoError.CreatedAt = DateTime.Now;
+                    this.contexto.Add(nuevoError);
+                    this.contexto.SaveChanges();
+
+                    return Ok("Error agregado exitosamente.");
+                }
             }
             catch (Exception ex)
             {
@@ -56,15 +75,25 @@ namespace API_Multimedios.Controllers
         {
             try
             {
-                if (!contexto.user.Any(u => u.IdUser == error.IdUser))
-                {
-                    return BadRequest("El id del user especificado no existe en la base de datos.");
-                }
-                this.contexto.Update(error);
-                this.contexto.Entry(error).Property("CreatedAt").IsModified = false;
-                this.contexto.SaveChanges();
+                var temp = this.contexto.error.Find(error.IdErrores);
 
-                return Ok("Error modificado exitosamente.");
+                if (temp == null)
+                {
+                    return BadRequest("El id del error no existe dentro de la base de datos, por favor ingrese un id que exista");
+                }
+                else
+                {
+                    if (!contexto.user.Any(u => u.IdUser == error.IdUser))
+                    {
+                        return BadRequest("El id del user especificado no existe en la base de datos.");
+                    }
+                    this.contexto.Attach(temp);
+                    this.contexto.Entry(temp).CurrentValues.SetValues(error);
+                    this.contexto.Entry(temp).Property("CreatedAt").IsModified = false;
+                    this.contexto.SaveChanges();
+
+                    return Ok("Error modificado exitosamente.");
+                }
             }
             catch (Exception ex)
             {
