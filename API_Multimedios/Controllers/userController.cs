@@ -40,7 +40,7 @@ namespace API_Multimedios.Controllers
             return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
-        [HttpPut("agregarUser")]
+        [HttpPost("agregarUser")]
         public IActionResult AgregarUser(user nuevoUser)
         {
             try
