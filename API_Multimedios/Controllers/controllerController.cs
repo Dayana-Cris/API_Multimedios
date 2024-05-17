@@ -40,7 +40,7 @@ namespace API_Multimedios.Controllers
             return BadRequest("El id ingresado no existe, digite nuevamente");
         }
 
-        [HttpPut("agregarController")]
+        [HttpPost("agregarController")]
         public IActionResult AgregarController(controller nuevoController)
         {
             
