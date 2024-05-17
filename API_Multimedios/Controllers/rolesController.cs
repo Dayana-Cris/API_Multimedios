@@ -41,7 +41,7 @@ namespace API_Multimedios.Controllers
         }
 
 
-        [HttpPut("agregarRol")]
+        [HttpPost("agregarRol")]
         public IActionResult AgregarRol(roles nuevoRol)
         {
             try
